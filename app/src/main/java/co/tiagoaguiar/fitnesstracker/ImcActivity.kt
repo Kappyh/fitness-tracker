@@ -1,16 +1,20 @@
 package co.tiagoaguiar.fitnesstracker
 
+import android.content.Context
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 
 class ImcActivity : AppCompatActivity() {
-    private lateinit var editHeight: EditText;
-    private lateinit var editWeight: EditText;
+    private lateinit var editHeight: EditText
+    private lateinit var editWeight: EditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_imc)
@@ -23,16 +27,24 @@ class ImcActivity : AppCompatActivity() {
         btnSend.setOnClickListener {
             if (!validate()) {
                 Toast.makeText(this, R.string.fields_messages, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener;
+                return@setOnClickListener
             }
-            val weight = editWeight.text.toString().toInt();
-            val height = editHeight.text.toString().toInt();
+            val weight = editWeight.text.toString().toInt()
+            val height = editHeight.text.toString().toInt()
 
-            val result = calculateImc(weight, height);
+            val result = calculateImc(weight, height)
             Log.d("resultado", "resultado: $result")
 
             val imcResponseId = imcResponse(result)
-            Toast.makeText(this, imcResponseId, Toast.LENGTH_SHORT).show()
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.imc_response, result))
+                .setMessage(imcResponseId)
+                .setPositiveButton(android.R.string.ok){ dialog, which ->
+                }
+                .create()
+                .show()
+            val service = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            service.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
     }
     @StringRes
